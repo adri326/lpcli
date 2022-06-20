@@ -11,7 +11,11 @@ else
 	ifeq ($(HAS_XCLIP), 1)
 		CFLAGS := $(CFLAGS) -DUSE_XCLIP
 	else
-		CFLAGS := $(CFLAGS) -lX11
+		ifeq ($(HAS_WLCOPY), 1)
+			CFLAGS := $(CFLAGS) -DUSE_WLCOPY
+		else
+			CFLAGS := $(CFLAGS) -lX11
+		endif
 	endif
 endif
 

@@ -27,7 +27,7 @@ void *lpcli_zeromemory(void *dst, size_t dstlen)
 	return ret;
 }
 
-#ifndef USE_XCLIP
+#if !defined(USE_XCLIP) && !defined(USE_WLCOPY)
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
 #include <unistd.h>
@@ -38,8 +38,15 @@ void *lpcli_zeromemory(void *dst, size_t dstlen)
 
 int lpcli_clipboardcopy(const char *text)
 {
-#ifdef USE_XCLIP
+#if defined(USE_XCLIP)
 	FILE *pout = popen("xclip -selection clipboard", "w");
+	if (!pout)
+		return LPCLI_FAIL;
+	fprintf(pout, "%s", text);
+	fflush(pout);
+	pclose(pout);
+#elif defined(USE_WLCOPY)
+  FILE *pout = popen("wl-copy", "w");
 	if (!pout)
 		return LPCLI_FAIL;
 	fprintf(pout, "%s", text);
